@@ -1,0 +1,45 @@
+{{ $user := .User.Globalname }}
+{{ $user_mention := .User.Mention }}
+{{ $id := .User.ID }}
+
+{{/* Bob Spongi for @Updates */}}
+{{ $log_bob_add:= (print "-# <:Verified_green:1332824248552788069> <@&1344391262253486253> added to " $user_mention "<:bob:1325127435922178099>")}}
+{{ $log_bob_remove:= (print "-# <:cross:1337889341154005116> <@&1344391262253486253> removed from " $user_mention "<:bob:1325127435922178099>")}}
+
+{{/* Bot for @Status */}}
+{{ $log_bot_add:= (print "-# <:Verified_green:1332824248552788069> <@&1344405212584087634> added to " $user_mention "<:bot:1230965297578770542>")}}
+{{ $log_bot_remove:= (print "-# <:cross:1337889341154005116> <@&1344405212584087634> removed from " $user_mention "<:bot:1230965297578770542>")}}
+
+{{/* Featch the emoji name:ID (( default emoji ids are with 0 id )) */}}
+{{ $reaction := .Reaction.Emoji.APIName}}
+{{/* If emojis is added it resturns true ; else false! */}}
+{{ $add_or_remove := .ReactionAdded }}
+
+{{/* by default it returns true... */}}
+{{ if $add_or_remove }}
+
+{{/* Bob Spongi Emoji add */}}
+{{ if eq $reaction "bob:1325127435922178099" }}
+{{ sendMessage 1278115945516241018 $log_bob_add }}
+{{ giveRoleID $id 1344391262253486253 }}
+
+{{/* Bot Emoji add */}}
+{{ else if eq $reaction "bot:1230965297578770542" }}
+    {{ sendMessage 1278115945516241018 $log_bot_add }}
+    {{ giveRoleID $id 1344405212584087634 }}
+{{end}}
+
+{{/* If emoji removed! and value is false */}}
+{{ else }}
+     
+    {{ if eq $reaction "bob:1325127435922178099" }}
+        {{ sendMessage 1278115945516241018 $log_bob_remove }}
+        {{ takeRoleName $id "Events" }}
+    {{/* Bot Emoji */}}
+
+    {{ else if eq $reaction "bot:1230965297578770542" }}  
+        {{ sendMessage 1278115945516241018 $log_bot_remove }}
+        {{ takeRoleName $id "Status" }}
+    {{end}}
+
+{{ end }}
